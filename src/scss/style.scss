@@ -1,0 +1,101 @@
+@import "nullstyle.scss";
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&family=Roboto:wght@400;500&family=Russo+One&display=swap');
+
+body{
+    font-family: 'Russo One', sans-serif;
+    background:rgb(255, 255, 255);
+}
+
+.header{
+    line-height: 80px;
+    font-size: 50px;
+    text-align: center;
+    background: #668f96;
+}
+
+.page__content{
+    max-width: 1320px;
+    margin: 0 auto;
+    background: rgb(233, 231, 231);
+    height: 100vh;
+}
+
+.difficulty-level {
+
+    &__header {
+        
+        padding-top: 30px;
+        font-size: 32px;
+        text-align: center;
+    }
+
+    &__list {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 50px;
+        
+        &__button {
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+            width: 150px;
+
+            &_easy {
+                background: green;
+            }
+
+            &_normal {
+                background: orange;
+            }
+
+            &_hard {
+                background: red;
+            }
+        }
+    }
+
+}
+
+.game-area{
+    width: 300px;
+    height: 500px;
+    margin: 50px auto 0 auto;
+    border: solid black 2px;
+
+
+    &__top-panel{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20%;
+
+        &__button{
+            width: 36px;
+            height: 36px;
+            background: yellow;
+        }
+    }
+    
+    &__field {
+        display: flex;
+        flex-wrap: wrap;
+        
+    }
+
+}
+
+.cell{
+    background: #c71515;
+    border: solid black 1px;
+    width: 40px;
+    height: 40px;
+    box-sizing: border-box;
+}
+
+
+
+
+

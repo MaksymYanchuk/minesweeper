@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    @@include('./html/head.html',{"title":"Главная" })
+    <body>
+        @@include('./html/header.html',{})
+        <main class="page">
+            <section class="page__content">
+                <div class="difficulty-level"></div>
+                <h1 class="difficulty-level__header"> Choose difficulty level</h1>
+                <ul class="difficulty-level__list">
+                    <li data-rows="9" data-columns="9" class="difficulty-level__list__button difficulty-level__list__button_easy">
+                        9x9
+                    </li>
+                    <li data-rows="16" data-columns="16"class="difficulty-level__list__button difficulty-level__list__button_normal">
+                        16x16
+                    </li>
+                    <li data-rows="16" data-columns="30"class="difficulty-level__list__button difficulty-level__list__button_hard">
+                        16x30
+                    </li>
+                </ul>
+            </section>
+        </main>
+        @@include('./html/footer.html',{})
+        <script src="js/app.min.js"></script>
+    </body>
+</html>
