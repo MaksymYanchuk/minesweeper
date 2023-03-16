@@ -43,7 +43,7 @@
     "swiper": "^8.3.2",
     "vinyl-ftp": "^0.6.1",
     "webp-converter": "2.2.3",
-    "webpack": "^5.74.0",
+    "webpack": "^5.76.1",
     "webpack-stream": "^7.0.0"
   },
   "dependencies": {
