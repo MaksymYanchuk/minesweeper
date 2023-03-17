@@ -114,34 +114,58 @@ body{
     height: 40px;
     font-size: 18px;
     box-sizing: border-box;
-   
-}
-
-.closed {
-    background-image: url(/src/svgicons/closed.svg);
     float: left;
     background-size: 100%;
     font-weight: 700;
     text-align: center;
     line-height: 39px;
-}
 
-.opened {
-    box-sizing: border-box;
-    background-image: none;
-    background-color:#c6c6c6;
-    border: solid gray 1px;
+    &_closed {
+        background-image: url(/src/svgicons/closed.svg);
+    }
+    
+    &_clear {
+        background-image: url(/src/svgicons/opened.svg);
+    }
+    &_flag{
+        background-image: url(/src/svgicons/flag.svg);
+    }
+    &_digit-1::before{
+        content: "1";
+    }
+    &_digit-2::before{
+        content: "2";
+    }
+    &_digit-3::before{
+        content: "3";
+    }
+    &_digit-4::before{
+        content: "4";
+    }
+    &_digit-5::before{
+        content: "5";
+    }
+    &_digit-6::before{
+        content: "6";
+    }
+    &_digit-7::before{
+        content: "7";
+    }
+    &_digit-8::before{
+        content: "8";
+    }
 }
 
 .mine {
     background-image: url(/src/svgicons/mine.svg)
 }
 
+.mine-red {
+    background-image: url(/src/svgicons/mine_red.svg);
+}
+
 .footer {
     height: 150px;
 }
 
-.mine-red {
-    background-image: url(/src/svgicons/mine_red.svg);
-}
 
