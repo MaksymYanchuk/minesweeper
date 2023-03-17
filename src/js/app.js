@@ -17,9 +17,9 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const cellClasses = {
     cell: "cell",
-    d0: "cell_closed",
     clear: "cell_clear",
     flag: "cell_flag",
+    d0: "cell_closed",
     d1: "cell_digit-1",
     d2: "cell_digit-2",
     d3: "cell_digit-3",
@@ -174,7 +174,7 @@ window.addEventListener("DOMContentLoaded", () => {
                 const length = matched.length;
                 switchClass(
                   cell,
-                  cellClasses.closed,
+                  cellClasses.d0,
                   cellClasses["d" + length],
                   cellClasses.clear
                 );
@@ -199,9 +199,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       });
 
-    document
-      .querySelector(".game-area__field")
-      .addEventListener("contextmenu", (e) => {
+    document.querySelector(".game-area__field").addEventListener("contextmenu", (e) => {
         e.preventDefault();
         const target = e.target;
         const cells = document.querySelectorAll(cellSelector);
