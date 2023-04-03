@@ -74,6 +74,8 @@ body{
 
 
     &__top-panel{
+    font-family: 'DS-Digital';
+    font-size: bold;
     background: lightgray;
     font-size: 50px;
     color: red;
@@ -112,14 +114,15 @@ body{
 .cell {
     width: 40px;
     height: 40px;
-    font-size: 18px;
+    font-size: 26px;
     box-sizing: border-box;
     float: left;
     background-size: 100%;
     font-weight: 700;
     text-align: center;
     line-height: 39px;
-
+    background-image: url(/src/svgicons/opened.svg);
+    
     &_closed {
         background-image: url(/src/svgicons/closed.svg);
     }
@@ -132,18 +135,23 @@ body{
     }
     &_digit-1::before{
         content: "1";
+        color:blue;
     }
     &_digit-2::before{
         content: "2";
+        color:green;
     }
     &_digit-3::before{
         content: "3";
+        color:red;
     }
     &_digit-4::before{
         content: "4";
+        color:rgb(47, 17, 82);
     }
     &_digit-5::before{
         content: "5";
+        color:rgb(70, 5, 5);
     }
     &_digit-6::before{
         content: "6";

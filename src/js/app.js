@@ -1,5 +1,9 @@
 "use strict";
-import { getRandomNumbers, intersect, switchClass } from "./helpers.js";
+import { getRandomNumbers,
+          intersect,
+          switchClass,
+          checkCells
+        } from "./helpers.js";
 
 window.addEventListener("DOMContentLoaded", () => {
 
@@ -19,13 +23,14 @@ window.addEventListener("DOMContentLoaded", () => {
     cellSelector = ".cell",
     cellSize = 40;
 
-  let mines = getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount);
+  let mines = getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount),
+      minesAround;
 
   const cellClasses = {
     cell: "cell",
-    clear: "cell_clear",
+    closed: "cell_closed",
     flag: "cell_flag",
-    d0: "cell_closed",
+    d0: "cell_clear",
     d1: "cell_digit-1",
     d2: "cell_digit-2",
     d3: "cell_digit-3",
@@ -102,7 +107,7 @@ window.addEventListener("DOMContentLoaded", () => {
   
       if (target.closest(cellSelector) && gameProperty.lost === false) {
         cells.forEach((cell, i) => {
-          if (target === cell && !target.classList.contains(cellClasses.clear)) {
+          if (target === cell && target.classList.contains(cellClasses.closed)) {
             cell.classList.toggle(cellClasses.flag);
           }
         });
@@ -110,91 +115,32 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   
     document.querySelector(".game-area__field").addEventListener("click", function openCell(e) {
-      const target = e.target;
+     
+      const target = e.target
+
       const cells = document.querySelectorAll(cellSelector);
-  
-      console.log(mines);
-      console.log(gameProperty.lost)
-  
-      if (target.closest(cellSelector) && gameProperty.lost === false) {
+
+      if (gameProperty.lost === false) {
         cells.forEach((cell, i) => {
           if (target === cell && !target.classList.contains(cellClasses.flag)) {
-            const checkCells = function () {
-              let cellsToCheck = [];
-  
-              if (i === 0) {
-                cellsToCheck = [i + 1, i + gameProperty.columns, i + gameProperty.columns + 1]; // top left corner
-              } else if (i === gameProperty.columns - 1) {
-                cellsToCheck = [i - 1, i + gameProperty.columns - 1, i + gameProperty.columns]; // top right corner
-              } else if (i === gameProperty.columns * gameProperty.rows - gameProperty.columns) {
-                cellsToCheck = [i - gameProperty.columns, i - gameProperty.columns + 1, i + 1]; // down left corner
-              } else if (i === gameProperty.columns * gameProperty.rows - 1) {
-                cellsToCheck = [i - gameProperty.columns - 1, i - gameProperty.columns, i - 1]; // down right corner
-              } else if (i % gameProperty.columns === 0) {
-                cellsToCheck = [
-                  i - gameProperty.columns,
-                  i - gameProperty.columns + 1,
-                  i + 1,
-                  i + gameProperty.columns,
-                  i + gameProperty.columns + 1,
-                ]; // left side
-              } else if (i > 0 && i < gameProperty.columns - 1) {
-                cellsToCheck = [
-                  i - 1,
-                  i + 1,
-                  i + gameProperty.columns - 1,
-                  i + gameProperty.columns,
-                  i + gameProperty.columns + 1,
-                ]; //top side
-              } else if (i % gameProperty.columns === gameProperty.columns - 1) {
-                cellsToCheck = [
-                  i - gameProperty.columns - 1,
-                  i - gameProperty.columns,
-                  i - 1,
-                  i + gameProperty.columns - 1,
-                  i + gameProperty.columns,
-                ]; //right side
-              } else if (
-                i > gameProperty.columns * gameProperty.rows - gameProperty.columns &&
-                i < gameProperty.columns * gameProperty.rows - 1
-              ) {
-                cellsToCheck = [
-                  i - gameProperty.columns - 1,
-                  i - gameProperty.columns,
-                  i - gameProperty.columns + 1,
-                  i - 1,
-                  i + 1,
-                ]; //bot side
-              } else {
-                cellsToCheck = [
-                  i - gameProperty.columns - 1,
-                  i - gameProperty.columns,
-                  i - gameProperty.columns + 1,
-                  i - 1,
-                  i + 1,
-                  i + gameProperty.columns - 1,
-                  i + gameProperty.columns,
-                  i + gameProperty.columns + 1,
-                ];
-              }
-  
-              const matched = intersect(mines, cellsToCheck);
-              const length = matched.length;
+          
+            if (!mines.includes(i)) {
 
-              if (!mines.includes(i)){
-                switchClass(
-                  cell,
-                  cellClasses.d0,
-                  cellClasses["d" + length],
-                  cellClasses.clear
-                );
+              let arr = [i];
+              
+              while (arr.length > 0) {
+                getMinesAround(arr[0], gameProperty.columns, gameProperty.rows);
+                if (minesAround === 0) {
+                  checkCells(arr[0], gameProperty.columns, gameProperty.rows).forEach(item => {
+                    if(arr.indexOf(item) === -1 && cells[item].classList.contains(cellClasses.closed)) arr.push(item);
+                    
+                  });
+                } 
+                switchClass(cells[arr[0]], cellClasses.closed, cellClasses["d" + minesAround]);
+                arr.shift();
               }
               
-            };
-  
-            checkCells();
-  
-            if (mines.includes(i)) {
+            } else {
               cell.classList.add("mine-red");
               gameProperty.lost = true;
   
@@ -225,7 +171,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     };
 
-    createCells(cellClasses.cell, cellClasses.d0);
+    createCells(cellClasses.cell, cellClasses.closed);
 
   }
 
@@ -244,4 +190,10 @@ window.addEventListener("DOMContentLoaded", () => {
       mineCounterClass: "game-area__top-panel__mine-counter",
     });
   }
+
+  function getMinesAround(i, cols, rows){
+    return minesAround = intersect(mines, checkCells(i, cols,rows)).length;
+  }
+  
+
 });
