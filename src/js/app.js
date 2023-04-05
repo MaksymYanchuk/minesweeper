@@ -132,6 +132,7 @@ window.addEventListener("DOMContentLoaded", () => {
                     
                   });
                 } 
+                cells[arr[0]].classList.remove(cellClasses.flag);
                 switchClass(cells[arr[0]], cellClasses.closed, cellClasses["d" + minesAround]);
                 arr.shift();
               }
@@ -204,5 +205,4 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     
   }
-
 });
