@@ -41,10 +41,6 @@ window.addEventListener("DOMContentLoaded", () => {
     d8: "cell_digit-8",
   };
 
-
-
-  
-
   createGame({
     rows: gameProperty.rows,
     columns: gameProperty.columns,
@@ -64,12 +60,10 @@ window.addEventListener("DOMContentLoaded", () => {
       gameProperty.rows = +target.getAttribute("data-rows");
       gameProperty.columns = +target.getAttribute("data-columns");
       gameProperty.minesCount = +target.getAttribute("data-mines");
-      mines = getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount);
+      resetGame();
     }
-    resetGame();
-  });
 
-  
+  });
 
   function createGame({
     rows,
@@ -112,10 +106,12 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         });
       }
+      setMinesCount(document.querySelector(".game-area__top-panel__mine-counter"), gameProperty.minesCount, cellClasses.flag)
     });
   
     document.querySelector(".game-area__field").addEventListener("click", function openCell(e) {
-     
+
+      
       const target = e.target
 
       const cells = document.querySelectorAll(cellSelector);
@@ -153,6 +149,7 @@ window.addEventListener("DOMContentLoaded", () => {
           }
         });
       }
+      setMinesCount(document.querySelector(".game-area__top-panel__mine-counter"), gameProperty.minesCount, cellClasses.flag)
     });
 
     resetButton.addEventListener("click", resetGame);
@@ -172,7 +169,7 @@ window.addEventListener("DOMContentLoaded", () => {
     };
 
     createCells(cellClasses.cell, cellClasses.closed);
-
+    setMinesCount(document.querySelector(".game-area__top-panel__mine-counter"), gameProperty.minesCount, cellClasses.flag)
   }
 
   function resetGame() {
@@ -195,5 +192,17 @@ window.addEventListener("DOMContentLoaded", () => {
     return minesAround = intersect(mines, checkCells(i, cols,rows)).length;
   }
   
+  function setMinesCount(counter, minesCount, flagClass) {
+    let countOfMines = minesCount;
+    let flags = document.querySelectorAll(`.${flagClass}`).length;
+    countOfMines -= flags;
+
+    if (countOfMines < 10){
+      counter.textContent = `00${countOfMines}`;
+    } else {
+      counter.textContent = `0${countOfMines}`;
+    }
+    
+  }
 
 });

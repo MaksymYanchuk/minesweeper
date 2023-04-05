@@ -1,5 +1,6 @@
 @import "nullstyle.scss";
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&family=Roboto:wght@400;500&family=Russo+One&display=swap');
+@import "fonts.scss";
 
 body{
     font-family: 'Russo One', sans-serif;
@@ -74,29 +75,40 @@ body{
 
 
     &__top-panel{
-    font-family: 'DS-Digital';
-    font-size: bold;
+    font-family: digital;
     background: lightgray;
-    font-size: 50px;
+    font-size: 70px;
     color: red;
     padding: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height:100px;
+    height:80px;
     border-bottom: solid black 2px;
 
         &__mine-counter{
+            border-radius: 5px;
+            padding: 0 5px 0 5px;
+            background-color: rgb(20, 20, 20);
+            height: 60px;
+            display: flex;
+            align-items: center ;
             font-size: inherit;
         }
         
         &__timer{
+            border-radius: 5px;
+            padding: 0 5px 0 5px;
+            background-color: rgb(20, 20, 20);
+            height: 60px;
+            display: flex;
+            align-items: center ;
             font-size: inherit;
         }
 
         &__button{
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             background-image: url(/src/svgicons/face_unpressed.svg);
             background-size: 100%;
         }

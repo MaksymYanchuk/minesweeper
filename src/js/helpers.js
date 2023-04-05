@@ -21,13 +21,13 @@ export function intersect(a, b){
     return matched;
 };
 
-export function filterSameNumbers(arr){
-
-}
-
 export function switchClass(elem, removeClass, addClass_a) {
     elem.classList.remove(removeClass);
     elem.classList.add(addClass_a);
+}
+
+export function getMinesAround(i, cols, rows){
+  return minesAround = intersect(mines, checkCells(i, cols,rows)).length;
 }
 
 export function checkCells(i, columns, rows) {
