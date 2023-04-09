@@ -12,6 +12,7 @@ window.addEventListener("DOMContentLoaded", () => {
     rows: 9,
     columns: 9,
     lost: false,
+    firstClick: true,
   }
 
   const difficulty = [
@@ -32,7 +33,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   ]
     
-  let board,
+  let board = {},
     timerInterval;
     
 
@@ -43,7 +44,7 @@ window.addEventListener("DOMContentLoaded", () => {
     cellSelector = ".cell",
     cellSize = 40;
 
-  let mines = getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount),
+  let mines =  getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount),
       minesAround;
 
   const cellClasses = {
@@ -118,7 +119,6 @@ window.addEventListener("DOMContentLoaded", () => {
     showElement(field, fieldClass, ".game-area");
 
     document.querySelector(".game-area__field").addEventListener("contextmenu", flag);
-     
   
     document.querySelector(".game-area__field").addEventListener("click", openCell)
 
@@ -153,6 +153,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function resetGame() {
     gameProperty.lost = false;
+    gameProperty.firstClick = true;
     mines = getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount);
     document.querySelector(".game-area").remove();
     createGame({
@@ -230,11 +231,14 @@ window.addEventListener("DOMContentLoaded", () => {
       if (mines.includes(i)) {
         cell.classList.add("mine");
       }
+
     });
 
     switchClass(board.resetButton, "game-area__top-panel__button", "game-area__top-panel__button_lose")
     stopTimer()
     gameProperty.lost = true;
+    document.querySelector(".game-area__field").removeEventListener("contextmenu", flag);
+    document.querySelector(".game-area__field").removeEventListener("click", openCell);
   }
 
   function flag(e) {
@@ -255,38 +259,47 @@ window.addEventListener("DOMContentLoaded", () => {
   };
   
   function openCell(e) {
-
-    setTimer();
     const target = e.target;
     const cells = document.querySelectorAll(cellSelector);
 
-    if (gameProperty.lost === false) {
-      cells.forEach((cell, i) => {
-        if (target === cell && !target.classList.contains(cellClasses.flag)) {
-        
-          if (!mines.includes(i)) {
 
-            let arr = [i];
-            
-            while (arr.length > 0) {
-              getMinesAround(arr[0], gameProperty.columns, gameProperty.rows);
-              if (minesAround === 0) {
-                checkCells(arr[0], gameProperty.columns, gameProperty.rows).forEach(item => {
-                  if(arr.indexOf(item) === -1 && cells[item].classList.contains(cellClasses.closed)) arr.push(item);
-                  
-                });
-              } 
-              cells[arr[0]].classList.remove(cellClasses.flag);
-              switchClass(cells[arr[0]], cellClasses.closed, cellClasses["d" + minesAround]);
-              arr.shift();
-            }
-            
-          } else {
-            lose(cell, cells);
+    
+    cells.forEach((cell, i) => {
+      if (target === cell && !target.classList.contains(cellClasses.flag)) {
+
+        // First click without mine
+        if (gameProperty.firstClick){
+          while (mines.includes(i)) {
+            mines = getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount)
+            console.log(mines)
+            console.log(i)
           }
+          gameProperty.firstClick = false
         }
-      });
-    }
+
+        if (!mines.includes(i)) {
+
+          let arr = [i];
+          
+          while (arr.length > 0) {
+            getMinesAround(arr[0], gameProperty.columns, gameProperty.rows);
+            if (minesAround === 0) {
+              checkCells(arr[0], gameProperty.columns, gameProperty.rows).forEach(item => {
+                if(arr.indexOf(item) === -1 && cells[item].classList.contains(cellClasses.closed)) arr.push(item);
+                
+              });
+            } 
+            cells[arr[0]].classList.remove(cellClasses.flag);
+            switchClass(cells[arr[0]], cellClasses.closed, cellClasses["d" + minesAround]);
+            arr.shift();
+          }
+          
+        } else {
+          lose(cell, cells);
+        }
+      }
+    });
+    setTimer();
     setMinesCount(document.querySelector(".game-area__top-panel__mine-counter"), gameProperty.minesCount, cellClasses.flag);
     checkWin(cells);
   };
