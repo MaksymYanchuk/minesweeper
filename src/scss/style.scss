@@ -86,7 +86,7 @@ body{
     height:80px;
     border-bottom: solid black 2px;
 
-        &__mine-counter{
+        &__mine-counter {
             border-radius: 5px;
             padding: 0 5px 0 5px;
             background-color: rgb(20, 20, 20);
@@ -96,7 +96,7 @@ body{
             font-size: inherit;
         }
         
-        &__timer{
+        &__timer {
             border-radius: 5px;
             padding: 0 5px 0 5px;
             background-color: rgb(20, 20, 20);
@@ -106,11 +106,25 @@ body{
             font-size: inherit;
         }
 
-        &__button{
+        &__button {
             width: 60px;
             height: 60px;
-            background-image: url(/src/svgicons/face_unpressed.svg);
             background-size: 100%;
+            background-image: url(/src/svgicons/face_unpressed.svg);
+
+            &_win {
+                width: 60px;
+                height: 60px;
+                background-size: 100%;
+                background-image: url(/src/svgicons/face_win.svg);
+            }
+
+            &_lose {
+                width: 60px;
+                height: 60px;
+                background-size: 100%;
+                background-image: url(/src/svgicons/face_lose.svg);
+            }
         }
 
     }
