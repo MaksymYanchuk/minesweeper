@@ -13,7 +13,25 @@ window.addEventListener("DOMContentLoaded", () => {
     columns: 9,
     lost: false,
   }
-  
+
+  const difficulty = [
+    {
+      minesCount: 10,
+      rows: 9,
+      columns: 9,
+    },
+    {
+      minesCount: 40,
+      rows: 16,
+      columns: 16,
+    },
+    {
+      minesCount: 99,
+      rows: 16,
+      columns: 30,
+    }
+  ]
+    
   let board,
     timerInterval;
     
@@ -57,14 +75,17 @@ window.addEventListener("DOMContentLoaded", () => {
   
   difficultyButtonsContainer.addEventListener("click", (e) => {
     const target = e.target;
+    const buttons = document.querySelectorAll(difficultyButtonSelector);
 
-    if (target.closest(difficultyButtonSelector)) {
-      gameProperty.rows = +target.getAttribute("data-rows");
-      gameProperty.columns = +target.getAttribute("data-columns");
-      gameProperty.minesCount = +target.getAttribute("data-mines");
-      resetGame();
-    }
-
+    buttons.forEach((button, i) => {
+     
+      if (target.closest(difficultyButtonSelector ) && target === button) {
+        gameProperty.rows = +difficulty[i].rows;
+        gameProperty.columns = +difficulty[i].columns;
+        gameProperty.minesCount = +difficulty[i].minesCount;
+        resetGame(); 
+      }
+    })
   });
 
   function createGame({
@@ -268,7 +289,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }
     setMinesCount(document.querySelector(".game-area__top-panel__mine-counter"), gameProperty.minesCount, cellClasses.flag);
     checkWin(cells);
-    console.log(timerInterval);
   };
 
 });
