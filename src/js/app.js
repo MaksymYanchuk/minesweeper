@@ -1,19 +1,19 @@
 "use strict";
-import { getRandomNumbers,
-          intersect,
-          switchClass,
-          checkCells
-        } from "./helpers.js";
+import {
+  getRandomNumbers,
+  intersect,
+  switchClass,
+  checkCells,
+} from "./helpers.js";
 
 window.addEventListener("DOMContentLoaded", () => {
-
   let gameProperty = {
     minesCount: 10,
     rows: 9,
     columns: 9,
     lost: false,
     firstClick: true,
-  }
+  };
 
   const difficulty = [
     {
@@ -30,22 +30,24 @@ window.addEventListener("DOMContentLoaded", () => {
       minesCount: 99,
       rows: 16,
       columns: 30,
-    }
-  ]
-    
+    },
+  ];
+
   let board = {},
     timerInterval;
-    
 
   const difficultyButtonsContainer = document.querySelector(
       ".difficulty-level__list"
     ),
-    difficultyButtonSelector = ".difficulty-level__list__button",
     cellSelector = ".cell",
     cellSize = 40;
 
-  let mines =  getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount),
-      minesAround;
+  let mines = getRandomNumbers(
+      0,
+      gameProperty.rows * gameProperty.columns,
+      gameProperty.minesCount
+    ),
+    minesAround;
 
   const cellClasses = {
     cell: "cell",
@@ -62,31 +64,43 @@ window.addEventListener("DOMContentLoaded", () => {
     d8: "cell_digit-8",
   };
 
+  const boardClasses = {
+    difficultyButtonContainer: "difficulty-level__list",
+    difficultyButton: "difficulty-level__list__button",
+    page: "page__content",
+    gameArea: "game-area",
+    topPanel: "game-area__top-panel",
+    resetButton: "game-area__top-panel__button",
+    resetButtonWin: "game-area__top-panel__button_win",
+    resetButtonLose: "game-area__top-panel__button_lose",
+    timer: "game-area__top-panel__timer",
+    mineCounter: "game-area__top-panel__mine-counter",
+    field: "game-area__field",
+  };
+
   createGame({
     rows: gameProperty.rows,
     columns: gameProperty.columns,
-    gameAreaClass: "game-area",
-    topPanelClass: "game-area__top-panel",
-    resetButtonClass: "game-area__top-panel__button",
-    timerClass: "game-area__top-panel__timer",
-    fieldClass: "game-area__field",
-    mineCounterClass: "game-area__top-panel__mine-counter",
+    gameAreaClass: boardClasses.gameArea,
+    topPanelClass: boardClasses.topPanel,
+    resetButtonClass: boardClasses.resetButton,
+    timerClass: boardClasses.timer,
+    fieldClass: boardClasses.field,
+    mineCounterClass: boardClasses.mineCounter,
   });
 
-  
-  difficultyButtonsContainer.addEventListener("click", (e) => {
+  document.querySelector(`.${boardClasses.difficultyButtonContainer}`).addEventListener("click", (e) => {
     const target = e.target;
-    const buttons = document.querySelectorAll(difficultyButtonSelector);
+    const buttons = document.querySelectorAll(`.${boardClasses.difficultyButton}`);
 
     buttons.forEach((button, i) => {
-     
-      if (target.closest(difficultyButtonSelector ) && target === button) {
+      if (target.closest(`.${boardClasses.difficultyButton}`) && target === button) {
         gameProperty.rows = +difficulty[i].rows;
         gameProperty.columns = +difficulty[i].columns;
         gameProperty.minesCount = +difficulty[i].minesCount;
-        resetGame(); 
+        resetGame();
       }
-    })
+    });
   });
 
   function createGame({
@@ -111,74 +125,79 @@ window.addEventListener("DOMContentLoaded", () => {
       document.querySelector(parentSelector).append(element);
     };
 
-    showElement(gameArea, gameAreaClass, ".page__content");
-    showElement(topPanel, topPanelClass, ".game-area");
-    showElement(mineCounter, mineCounterClass, ".game-area__top-panel");
-    showElement(resetButton, resetButtonClass, ".game-area__top-panel");
-    showElement(timer, timerClass, ".game-area__top-panel");
-    showElement(field, fieldClass, ".game-area");
+    showElement(gameArea, gameAreaClass, `.${boardClasses.page}`);
+    showElement(topPanel, topPanelClass, `.${boardClasses.gameArea}`);
+    showElement(mineCounter, mineCounterClass, `.${boardClasses.topPanel}`);
+    showElement(resetButton, resetButtonClass, `.${boardClasses.topPanel}`);
+    showElement(timer, timerClass, `.${boardClasses.topPanel}`);
+    showElement(field, fieldClass, `.${boardClasses.gameArea}`);
 
-    document.querySelector(".game-area__field").addEventListener("contextmenu", flag);
-  
-    document.querySelector(".game-area__field").addEventListener("click", openCell)
-
+    field.addEventListener("contextmenu", flag);
+    field.addEventListener("click", openCell);
     resetButton.addEventListener("click", resetGame);
 
     gameArea.style.width = cellSize * columns + "px";
-    field.style.height = cellSize * gameProperty.rows + "px";
+    field.style.height = cellSize * rows + "px";
     mineCounter.textContent = "000";
     timer.textContent = "000";
 
     const createCells = function (cellClass, closedClass) {
-      for (let i = 0; i < gameProperty.rows * columns; i++) {
+      for (let i = 0; i < rows * columns; i++) {
         const cell = document.createElement("div");
         cell.classList.add(cellClass);
         cell.classList.add(closedClass);
-        document.querySelector(".game-area__field").append(cell);
+        field.append(cell);
       }
     };
 
     createCells(cellClasses.cell, cellClasses.closed);
-    setMinesCount(document.querySelector(".game-area__top-panel__mine-counter"), gameProperty.minesCount, cellClasses.flag)
-
-      board = {
-      gameArea:gameArea,
-      topPanel:topPanel,
-      mineCounter:mineCounter,
-      resetButton:resetButton,
-      timer:timer,
-      field:field,
-    }
+    setMinesCount(
+      mineCounter,
+      gameProperty.minesCount,
+      cellClasses.flag
+    );
+    board = {
+      gameArea: gameArea,
+      topPanel: topPanel,
+      mineCounter: mineCounter,
+      resetButton: resetButton,
+      timer: timer,
+      field: field,
+    };
   }
 
   function resetGame() {
     gameProperty.lost = false;
     gameProperty.firstClick = true;
-    mines = getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount);
-    document.querySelector(".game-area").remove();
+    mines = getRandomNumbers(
+      0,
+      gameProperty.rows * gameProperty.columns,
+      gameProperty.minesCount
+    );
+    board.gameArea.remove();
     createGame({
       rows: gameProperty.rows,
       columns: gameProperty.columns,
-      gameAreaClass: "game-area",
-      topPanelClass: "game-area__top-panel",
-      resetButtonClass: "game-area__top-panel__button",
-      timerClass: "game-area__top-panel__timer",
-      fieldClass: "game-area__field",
-      mineCounterClass: "game-area__top-panel__mine-counter",
+      gameAreaClass: boardClasses.gameArea,
+      topPanelClass: boardClasses.topPanel,
+      resetButtonClass: boardClasses.resetButton,
+      timerClass: boardClasses.timer,
+      fieldClass: boardClasses.field,
+      mineCounterClass: boardClasses.mineCounter,
     });
     stopTimer();
   }
 
-  function getMinesAround(i, cols, rows){
-    return minesAround = intersect(mines, checkCells(i, cols,rows)).length;
+  function getMinesAround(i, cols, rows) {
+    return (minesAround = intersect(mines, checkCells(i, cols, rows)).length);
   }
-  
+
   function setMinesCount(counter, minesCount, flagClass) {
     let countOfMines = minesCount;
     let flags = document.querySelectorAll(`.${flagClass}`).length;
     countOfMines -= flags;
 
-    if (countOfMines < 10){
+    if (countOfMines < 10) {
       counter.innerHTML = `00${countOfMines}`;
     } else {
       counter.innerHTML = `0${countOfMines}`;
@@ -187,21 +206,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function setTimer() {
     if (timerInterval === undefined) {
-
       const start = new Date();
       timerInterval = setInterval(updateTimer, 1000);
-  
+
       function updateTimer() {
-        let t = parseInt((new Date() - start) / 1000); 
-        if (t < 100 && t >= 10){
+        let t = parseInt((new Date() - start) / 1000);
+        if (t < 100 && t >= 10) {
           board.timer.innerHTML = `0${t}`;
         } else if (t < 10) {
           board.timer.innerHTML = `00${t}`;
         }
       }
     }
-  } 
-
+  }
 
   function stopTimer() {
     clearInterval(timerInterval);
@@ -210,19 +227,22 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function checkWin(cells) {
     let openedCells = [];
-    cells.forEach(cell => {
-      if (!cell.classList.contains(cellClasses.closed)){
+    cells.forEach((cell) => {
+      if (!cell.classList.contains(cellClasses.closed)) {
         openedCells.push(cell);
       }
       if (openedCells.length === cells.length - mines.length) {
-        switchClass(board.resetButton, "game-area__top-panel__button", "game-area__top-panel__button_win")
-        stopTimer()
-        document.querySelector(".game-area__field").removeEventListener("contextmenu", flag);
+        switchClass(
+          board.resetButton,
+          boardClasses.resetButton,
+          boardClasses.resetButtonWin,
+        );
+        stopTimer();
       }
-   })
+    });
   }
 
-  function lose(cell, cells){
+  function lose(cell, cells) {
     cell.classList.add("mine-red");
 
     gameProperty.lost = true;
@@ -231,20 +251,19 @@ window.addEventListener("DOMContentLoaded", () => {
       if (mines.includes(i)) {
         cell.classList.add("mine");
       }
-
     });
 
-    switchClass(board.resetButton, "game-area__top-panel__button", "game-area__top-panel__button_lose")
-    stopTimer()
+    switchClass(
+      board.resetButton,
+      boardClasses.resetButton,
+      boardClasses.resetButtonLose,
+    );
+    stopTimer();
     gameProperty.lost = true;
-    document.querySelector(".game-area__field").removeEventListener("contextmenu", flag);
-    document.querySelector(".game-area__field").removeEventListener("click", openCell);
   }
 
   function flag(e) {
     e.preventDefault();
-
-    setTimer();
     const target = e.target;
     const cells = document.querySelectorAll(cellSelector);
 
@@ -254,54 +273,76 @@ window.addEventListener("DOMContentLoaded", () => {
           cell.classList.toggle(cellClasses.flag);
         }
       });
+      setTimer();
+      setMinesCount(
+        board.mineCounter,
+        gameProperty.minesCount,
+        cellClasses.flag
+      );
     }
-    setMinesCount(document.querySelector(".game-area__top-panel__mine-counter"), gameProperty.minesCount, cellClasses.flag)
-  };
-  
+  }
+
   function openCell(e) {
     const target = e.target;
     const cells = document.querySelectorAll(cellSelector);
 
-
-    
     cells.forEach((cell, i) => {
-      if (target === cell && !target.classList.contains(cellClasses.flag)) {
-
+      if (
+        target === cell &&
+        !target.classList.contains(cellClasses.flag) &&
+        !gameProperty.lost
+      ) {
         // First click without mine
-        if (gameProperty.firstClick){
+        if (gameProperty.firstClick) {
           while (mines.includes(i)) {
-            mines = getRandomNumbers(0, gameProperty.rows * gameProperty.columns, gameProperty.minesCount)
-            console.log(mines)
-            console.log(i)
+            mines = getRandomNumbers(
+              0,
+              gameProperty.rows * gameProperty.columns,
+              gameProperty.minesCount
+            );
           }
-          gameProperty.firstClick = false
+          gameProperty.firstClick = false;
         }
 
         if (!mines.includes(i)) {
-
           let arr = [i];
-          
+
+          // auto open clear cells
           while (arr.length > 0) {
             getMinesAround(arr[0], gameProperty.columns, gameProperty.rows);
             if (minesAround === 0) {
-              checkCells(arr[0], gameProperty.columns, gameProperty.rows).forEach(item => {
-                if(arr.indexOf(item) === -1 && cells[item].classList.contains(cellClasses.closed)) arr.push(item);
-                
+              checkCells(
+                arr[0],
+                gameProperty.columns,
+                gameProperty.rows
+              ).forEach((item) => {
+                if (
+                  arr.indexOf(item) === -1 &&
+                  cells[item].classList.contains(cellClasses.closed)
+                )
+                  arr.push(item);
               });
-            } 
+            }
             cells[arr[0]].classList.remove(cellClasses.flag);
-            switchClass(cells[arr[0]], cellClasses.closed, cellClasses["d" + minesAround]);
+            switchClass(
+              cells[arr[0]],
+              cellClasses.closed,
+              cellClasses["d" + minesAround]
+            );
             arr.shift();
           }
-          
+
+          setTimer();
+          setMinesCount(
+            board.mineCounter,
+            gameProperty.minesCount,
+            cellClasses.flag
+          );
+          checkWin(cells);
         } else {
           lose(cell, cells);
         }
       }
     });
-    setTimer();
-    setMinesCount(document.querySelector(".game-area__top-panel__mine-counter"), gameProperty.minesCount, cellClasses.flag);
-    checkWin(cells);
-  };
-
+  }
 });
