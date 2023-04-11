@@ -8,7 +8,7 @@ import {
 function minesweeper() {
     
 let gameProperty = {
-    minesCount: 3,
+    minesCount: 10,
     rows: 9,
     columns: 9,
     lost: false,
