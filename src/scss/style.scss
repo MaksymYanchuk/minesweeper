@@ -1,6 +1,7 @@
+@import "fonts.scss";
 @import "nullstyle.scss";
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;700&family=Roboto:wght@400;500&family=Russo+One&display=swap');
-@import "fonts.scss";
+
 
 body{
     font-family: 'Russo One', sans-serif;
@@ -110,20 +111,20 @@ body{
             width: 60px;
             height: 60px;
             background-size: 100%;
-            background-image: url(/src/svgicons/face_unpressed.svg);
+            background-image: url(../img/svgicons/face_unpressed.svg);
 
             &_win {
                 width: 60px;
                 height: 60px;
                 background-size: 100%;
-                background-image: url(/src/svgicons/face_win.svg);
+                background-image: url(../img/svgicons/face_win.svg);
             }
 
             &_lose {
                 width: 60px;
                 height: 60px;
                 background-size: 100%;
-                background-image: url(/src/svgicons/face_lose.svg);
+                background-image: url(../img/svgicons/face_lose.svg);
             }
         }
 
@@ -147,17 +148,17 @@ body{
     font-weight: 700;
     text-align: center;
     line-height: 39px;
-    background-image: url(/src/svgicons/opened.svg);
+    background-image: url(../img/svgicons/opened.svg);
     
     &_closed {
-        background-image: url(/src/svgicons/closed.svg);
+        background-image: url(../img/svgicons/closed.svg);
     }
     
     &_clear {
-        background-image: url(/src/svgicons/opened.svg);
+        background-image: url(../img/svgicons/opened.svg);
     }
     &_flag{
-        background-image: url(/src/svgicons/flag.svg);
+        background-image: url(../img/svgicons/flag.svg);
     }
     &_digit-1::before{
         content: "1";
@@ -191,11 +192,11 @@ body{
 }
 
 .mine {
-    background-image: url(/src/svgicons/mine.svg)
+    background-image: url(../img/svgicons/mine.svg)
 }
 
 .mine-red {
-    background-image: url(/src/svgicons/mine_red.svg);
+    background-image: url(../img/svgicons/mine_red.svg);
 }
 
 .footer {
