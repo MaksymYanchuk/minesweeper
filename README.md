@@ -21,3 +21,6 @@ $ git clone https://github.com/boomer77777/minesweeper.git
 $ npm install
 
 $ npm run build
+
+# Live site
+http://minesweeper.zzz.com.ua/
