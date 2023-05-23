@@ -1,10 +1,15 @@
 @font-face{
-	font-family: digital;
-	font-display: swap;
+	font-family: "digital";
+	font-display: block;
 	src: url("../fonts/digital-7 (mono).woff2") format("woff2"), url("../fonts/digital-7 (mono).woff") format("woff");
 	font-weight: 400;
 	font-style: normal;
 }
 
-
-
+@font-face{
+	font-family: 'Russo One';
+	font-display: block;
+	src: url('../fonts/RussoOne-Regular.woff2') format('woff2'), url('../fonts/RussoOne-Regular.woff') format('woff');
+	font-weight: 400;
+	font-style: normal;
+}

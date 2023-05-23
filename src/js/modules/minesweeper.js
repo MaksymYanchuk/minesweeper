@@ -3,19 +3,9 @@ import {
     intersect,
     switchClass,
     checkCells,
-  } from "./helpers.js";
+  } from "../helpers.js";
 
-function minesweeper() {
-    
-let gameProperty = {
-    minesCount: 10,
-    rows: 9,
-    columns: 9,
-    lost: false,
-    win: false,
-    firstClick: true,
-    };
-
+function minesweeper(gameState) {
     const difficulty = [
     {
         minesCount: 10,
@@ -38,14 +28,41 @@ let gameProperty = {
     timerInterval;
 
     const cellSize = 40;
+    const modalStatsContent = document.querySelector('.modal-stats__content');
 
-    let mines = getRandomNumbers(
-        0,
-        gameProperty.rows * gameProperty.columns,
-        gameProperty.minesCount
-    ),
-    minesAround;
+    const createMines = function() {
 
+        gameState.mines = getRandomNumbers(
+            0,
+            gameState.rows * gameState.columns,
+            gameState.minesCount
+        )
+
+        fetch('files/vendor/create.php', {
+            method: 'POST',
+            headers: {
+            'Content-type': 'application/x-www-form-urlencoded'
+            },
+            body: 'hash=' + md5(gameState.mines)
+            })
+            .then(function(response) {
+            if (response.ok) {
+            // Обработка успешного ответа
+            } else {
+            // Обработка ошибки
+            console.log('Error ' + response.status);
+            }
+            })
+            .catch(function(error) {
+            console.log(error);
+        });
+        
+    };
+    
+    createMines();
+
+    let minesAround;
+    
     const cellClasses = {
     cell: "cell",
     closed: "cell_closed",
@@ -64,7 +81,7 @@ let gameProperty = {
     const boardClasses = {
     difficultyButtonContainer: "difficulty-level__list",
     difficultyButton: "difficulty-level__list__button",
-    page: "page__content",
+    parent: "game-container",
     gameArea: "game-area",
     topPanel: "game-area__top-panel",
     resetButton: "game-area__top-panel__button",
@@ -76,8 +93,8 @@ let gameProperty = {
     };
 
     createGame({
-    rows: gameProperty.rows,
-    columns: gameProperty.columns,
+    rows: gameState.rows,
+    columns: gameState.columns,
     gameAreaClass: boardClasses.gameArea,
     topPanelClass: boardClasses.topPanel,
     resetButtonClass: boardClasses.resetButton,
@@ -91,11 +108,21 @@ let gameProperty = {
     const buttons = document.querySelectorAll(`.${boardClasses.difficultyButton}`);
 
     buttons.forEach((button, i) => {
+
         if (target.closest(`.${boardClasses.difficultyButton}`) && target === button) {
-        gameProperty.rows = +difficulty[i].rows;
-        gameProperty.columns = +difficulty[i].columns;
-        gameProperty.minesCount = +difficulty[i].minesCount;
-        resetGame();
+            switch(i) {
+                case 0: gameState.difficulty = "Easy";
+                break;
+                case 1: gameState.difficulty = "Medium";
+                break;
+                case 2: gameState.difficulty = "Hard";
+                break;
+            }
+            gameState.rows = +difficulty[i].rows;
+            gameState.columns = +difficulty[i].columns;
+            gameState.minesCount = +difficulty[i].minesCount;
+            modalStatsContent.style.display = 'none';
+            resetGame();
         }
     });
     });
@@ -121,13 +148,15 @@ let gameProperty = {
         element.classList.add(className);
         document.querySelector(parentSelector).append(element);
     };
+    gameArea.classList.add(gameAreaClass);
+    document.querySelector(`.${boardClasses.parent}`).prepend(gameArea);
 
-    showElement(gameArea, gameAreaClass, `.${boardClasses.page}`);
     showElement(topPanel, topPanelClass, `.${boardClasses.gameArea}`);
     showElement(mineCounter, mineCounterClass, `.${boardClasses.topPanel}`);
     showElement(resetButton, resetButtonClass, `.${boardClasses.topPanel}`);
     showElement(timer, timerClass, `.${boardClasses.topPanel}`);
     showElement(field, fieldClass, `.${boardClasses.gameArea}`);
+
 
     field.addEventListener("contextmenu", flag);
     field.addEventListener("click", openCell);
@@ -150,7 +179,7 @@ let gameProperty = {
     createCells(cellClasses.cell, cellClasses.closed);
     setMinesCount(
         mineCounter,
-        gameProperty.minesCount,
+        gameState.minesCount,
         cellClasses.flag
     );
     board = {
@@ -164,18 +193,16 @@ let gameProperty = {
     }
 
     function resetGame() {
-    gameProperty.lost = false;
-    gameProperty.win = false;
-    gameProperty.firstClick = true;
-    mines = getRandomNumbers(
-        0,
-        gameProperty.rows * gameProperty.columns,
-        gameProperty.minesCount
-    );
+    gameState.clicks = 0;
+    gameState.time = 0;
+    gameState.lost = false;
+    gameState.win = false;
+    gameState.firstClick = true;
+    createMines();
     board.gameArea.remove();
     createGame({
-        rows: gameProperty.rows,
-        columns: gameProperty.columns,
+        rows: gameState.rows,
+        columns: gameState.columns,
         gameAreaClass: boardClasses.gameArea,
         topPanelClass: boardClasses.topPanel,
         resetButtonClass: boardClasses.resetButton,
@@ -183,11 +210,13 @@ let gameProperty = {
         fieldClass: boardClasses.field,
         mineCounterClass: boardClasses.mineCounter,
     });
+    modalStatsContent.style.display = 'none';
     stopTimer();
+    
     }
 
     function getMinesAround(i, cols, rows) {
-    return (minesAround = intersect(mines, checkCells(i, cols, rows)).length);
+    return (minesAround = intersect(gameState.mines, checkCells(i, cols, rows)).length);
     }
 
     function setMinesCount(counter, minesCount, flagClass) {
@@ -205,17 +234,20 @@ let gameProperty = {
     function setTimer() {
     if (timerInterval === undefined) {
         const start = new Date();
-        timerInterval = setInterval(updateTimer, 1000);
+        timerInterval = setInterval(updateTimer, 4);
 
         function updateTimer() {
-        let t = parseInt((new Date() - start) / 1000);
-        if (t < 10) {
-            board.timer.innerHTML = `00${t}`;
-        } else if (t < 100 && t >= 10) {
-            board.timer.innerHTML = `0${t}`;
-        } else {
-            board.timer.innerHTML = t;
-        }
+            
+            let t = parseInt((new Date() - start) / 1000);
+            let floatTime = (new Date() - start) / 1000;
+            if (t < 10) {
+                board.timer.innerHTML = `00${t}`;
+            } else if (t < 100 && t >= 10) {
+                board.timer.innerHTML = `0${t}`;
+            } else {
+                board.timer.innerHTML = t;
+            }
+            gameState.time = floatTime;
         }
     }
     }
@@ -231,14 +263,79 @@ let gameProperty = {
         if (!cell.classList.contains(cellClasses.closed)) {
         openedCells.push(cell);
         }
-        if (openedCells.length === cells.length - mines.length) {
+        if (openedCells.length === cells.length -  gameState.mines.length) {
+
         switchClass(
             board.resetButton,
             boardClasses.resetButton,
             boardClasses.resetButtonWin,
         );
         stopTimer();
-        gameProperty.win = true;
+        gameState.win = true;
+        
+        const result = () => {
+            const difficulty = document.querySelector('#difficulty');
+            const username = document.querySelector('#username');
+            const time = document.querySelector('#time');
+            const clicks = document.querySelector('#clicks');
+    
+
+            difficulty.innerHTML = gameState.difficulty;
+            switch(gameState.difficulty) {
+                case 'Easy': difficulty.classList.add('easy');
+                break;
+                case "Medium": difficulty.classList.add('medium');
+                break;
+                case "Hard": difficulty.classList.add('hard');
+                break;
+            }
+
+            modalStatsContent.style.display = 'block';
+            
+            username.innerHTML = gameState.player;
+            time.innerHTML = gameState.time;
+            clicks.innerHTML = gameState.clicks;
+    
+            const modalStatsBtn = document.querySelector('.modal-stats__btn');
+            modalStatsBtn.addEventListener('click', () => {
+                modalStatsContent.style.display = 'none';
+            })
+        }
+
+        result();
+
+        const now = new Date();
+        const offsetInMinutes = now.getTimezoneOffset();
+        const offsetInMilliseconds = offsetInMinutes * 60 * 1000;
+        const utcTimestamp = now.getTime() - offsetInMilliseconds;
+        const utcDate = new Date(utcTimestamp);
+        const utcString = utcDate.toISOString();
+
+        fetch('files/vendor/create.php', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'difficulty=' + gameState.difficulty + 
+            '&player=' + gameState.player + 
+            '&time=' + gameState.time + 
+            '&clicks=' + gameState.clicks + 
+            '&date=' + utcString +
+            '&mines=' + gameState.mines
+            })
+            .then(function(response) {
+            if (response.status === 200) {
+            return response.text();
+            } else {
+            throw new Error('Ошибка ' + response.status);
+            }
+            })
+            .then(function(data) {
+            console.log(data);
+            })
+            .catch(function(error) {
+            console.log(error);
+            });
         }
     });
     }
@@ -246,10 +343,10 @@ let gameProperty = {
     function lose(cell, cells) {
     cell.classList.add("mine-red");
 
-    gameProperty.lost = true;
+    gameState.lost = true;
 
     cells.forEach((cell, i) => {
-        if (mines.includes(i)) {
+        if (gameState.mines.includes(i)) {
         cell.classList.add("mine");
         }
     });
@@ -260,15 +357,19 @@ let gameProperty = {
         boardClasses.resetButtonLose,
     );
     stopTimer();
-    gameProperty.lost = true;
+    gameState.lost = true;
+
     }
 
     function flag(e) {
     e.preventDefault();
+
+    gameState.clicks++;
+
     const target = e.target;
     const cells = document.querySelectorAll(`.${cellClasses.cell}`);
 
-    if (target.closest(`.${cellClasses.cell}`) && gameProperty.lost === false && !gameProperty.win) {
+    if (target.closest(`.${cellClasses.cell}`) && gameState.lost === false && !gameState.win) {
         cells.forEach((cell, i) => {
         if (target === cell && target.classList.contains(cellClasses.closed)) {
             cell.classList.toggle(cellClasses.flag);
@@ -277,13 +378,14 @@ let gameProperty = {
         setTimer();
         setMinesCount(
         board.mineCounter,
-        gameProperty.minesCount,
+        gameState.minesCount,
         cellClasses.flag
         );
     }
     }
 
     function openCell(e) {
+    gameState.clicks++;
     const target = e.target;
     const cells = document.querySelectorAll(`.${cellClasses.cell}`);
 
@@ -291,33 +393,33 @@ let gameProperty = {
         if (
         target === cell &&
         !target.classList.contains(cellClasses.flag) &&
-        !gameProperty.lost &&
-        !gameProperty.win
+        !gameState.lost &&
+        !gameState.win
         ) {
             
         // First click without mine
-        if (gameProperty.firstClick) {
-            while (mines.includes(i)) {
-            mines = getRandomNumbers(
+        if (gameState.firstClick) {
+            while (gameState.mines.includes(i)) {
+                gameState.mines = getRandomNumbers(
                 0,
-                gameProperty.rows * gameProperty.columns,
-                gameProperty.minesCount
+                gameState.rows * gameState.columns,
+                gameState.minesCount
             );
             }
-            gameProperty.firstClick = false;
+            gameState.firstClick = false;
         }
 
-        if (!mines.includes(i)) {
+        if (!gameState.mines.includes(i)) {
             let arr = [i];
 
             // auto open clear cells
             while (arr.length > 0) {
-            getMinesAround(arr[0], gameProperty.columns, gameProperty.rows);
+            getMinesAround(arr[0], gameState.columns, gameState.rows);
             if (minesAround === 0) {
                 checkCells(
                 arr[0],
-                gameProperty.columns,
-                gameProperty.rows
+                gameState.columns,
+                gameState.rows
                 ).forEach((item) => {
                 if (
                     arr.indexOf(item) === -1 &&
@@ -338,7 +440,7 @@ let gameProperty = {
             setTimer();
             setMinesCount(
             board.mineCounter,
-            gameProperty.minesCount,
+            gameState.minesCount,
             cellClasses.flag
             );
             checkWin(cells);
