@@ -1,4 +1,4 @@
-Minesweper
+# Minesweper
 
 # Technologies
 
@@ -9,7 +9,7 @@ HTML,
 CSS,
 PHP
 
-Setup
+# Setup
 
 To run this project, install it locally using npm:
 
